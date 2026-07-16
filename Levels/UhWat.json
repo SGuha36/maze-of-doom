@@ -1,0 +1,37 @@
+{
+    "board": 
+    [
+        " ##       ######",
+        " #  ####### ## #",
+        " # ###      #  #",
+        " # ### ## ##  ##",
+        "     # ## ## ###",
+        "## #   ## ## ###",
+        "## ###### ##    ",
+        "## #####  ## ## ",
+        "## ##    ###  # ",
+        "#  ## ####### # ",
+        "#####      ## # ",
+        "###   ####  # # ",
+        "##  # # ### # # ",
+        "##### #     # # ",
+        "#####  #### # # ",
+        "###########   #E"
+    ],
+    "levelName": "Uh... Wat?",
+    "colour": "#FFFFF0",
+    "doomEnds": false,
+    "worldEnd": false,
+    "worldEndCoords": null,
+    "vision": "unlimited",
+    "height": 480,
+    "width": 480,
+    "singleSquare": 30,
+    "buff": 1,
+    "mechanics": ["player", "exit", "wall", "xp"],
+    "effects": [null],
+    "winLocation": {"x": 15, "y": 15},
+    "startingSquare": {"x": 0, "y": 0},
+    "extraPoints": {"x": 9, "y": 0},
+    "facing": "S"
+}

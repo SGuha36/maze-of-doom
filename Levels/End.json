@@ -1,0 +1,33 @@
+{
+    "board": 
+    [
+        "   # # #   #   # # ##  ####",
+        "# ##   #   # # #  ### #####",
+        "# ## # # # # # # # #  #####",
+        "###########################",
+        "   #   #   ################",
+        "  ## # #  #################",
+        " ###   # # ################",
+        "####################### # #",
+        "   # ###   # # # #   #  # #",
+        "   # ###   #   # # # ######",
+        " ###  ## # ## ## # # #### #",
+        "###########################"
+    ],
+    "levelName": "Thanks For Playing!",
+    "colour": "#FFFFF0",
+    "doomEnds": false,
+    "vision": "unlimited",  
+    "worldEnd": false,
+    "worldEndCoords": null,
+    "height": 330,
+    "width": 810,
+    "singleSquare": 30,
+    "buff": 1,
+    "mechanics": ["player", "exit", "wall", "xp"],
+    "effects": null,
+    "winLocation": {"x": 5, "y": 5},
+    "startingSquare": {"x": 25, "y": 10},
+    "extraPoints": null,
+    "facing": "E"
+}

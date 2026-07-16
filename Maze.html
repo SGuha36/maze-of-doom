@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="title">Almighty Maze Game</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bitcount&family=Libre+Barcode+39&display=swap" rel="stylesheet">
+    <style>
+        /* General body styling for a flexible column layout */
+        body {
+            display: flex;
+            flex-direction: column; /* Arrange children vertically */
+            align-items: center; /* Center items horizontally */
+            justify-content: center; /* Center all content blocks vertically within the viewport */
+            min-height: 100vh; /* Ensure body takes full viewport height */
+            margin: 0; /* Remove default body margin */
+            background-color: #f0f0f0; /* Light background for the page */
+            padding: 0; /* Removed body padding to prevent scrollbar from it */
+            box-sizing: border-box; /* Include padding in element's total width and height */
+            overflow: hidden; /* Prevent scrollbars on the body */
+        }
+
+        /* Container for the canvas, allowing it to grow and shrink */
+        #game-container {
+            flex-grow: 1; /* Allows this div to take up available vertical space */
+            display: flex;
+            justify-content: center; /* Horizontally center canvas */
+            align-items: center;    /* Vertically center canvas */
+            width: 100%; /* Ensure div takes full width */
+            /* Removed fixed max-height calculation; flex-grow and canvas max-height handle sizing */
+            overflow: hidden; /* Hide any overflow within the container itself */
+        }
+
+        canvas {
+            border: 2px solid #333; /* Add a border to the canvas for better visibility */
+            background-color: #eee; /* Default canvas background */
+            display: block; /* Remove extra space below canvas */
+            max-width: 90vw; /* Prevent canvas from overflowing on smaller screens */
+            max-height: 100%; /* Important: canvas should not exceed its container's height */
+            object-fit: contain; /* Ensures the entire canvas content is visible */
+        }
+
+        #heading {
+            font-family: "Bitcount", system-ui;
+            font-optical-sizing: auto;
+            font-weight: 400;
+            font-style: normal;
+            font-variation-settings:
+                "slnt" 0,
+                "CRSV" 0.5,
+                "ELSH" 0,
+                "ELXP" 0;
+            font-size: 45px;
+            text-align: center;
+            margin-top: 0; /* Set margin-top to 0 as requested */
+            margin-bottom: 5px; /* Space below heading */
+            color: #333;
+            flex-shrink: 0; /* Prevent heading from shrinking */
+        }
+
+        .messages {
+            font-family: "Bitcount", system-ui;
+            font-size: 50px;
+            text-align: center;
+            margin-top: 0px; /* Smaller margin above message */
+            margin-bottom: 5px; /* Space below message */
+            color: #555;
+            /* white-space: pre-wrap; Preserve whitespace and allow line breaks */
+            flex-shrink: 0; /* Prevent message display from shrinking */
+        }
+    </style>
+</head>
+<body>
+    <h1 id="heading"></h1>
+    <div id="levelEndDisplay" class="messages"></div>
+    <div id="game-container">
+        <canvas id="canvas"></canvas>
+    </div>
+    <div id="instructions" class="messages">WASD/Arrow Keys to Move.</div>
+
+    <script>
+        // Get references to the canvas and its 2D rendering context
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        // References to HTML elements for displaying messages
+        const headingElement = document.getElementById("heading");
+        const levelEndDisplay = document.getElementById("levelEndDisplay");
+        const instructions = document.getElementById("instructions");
+
+        // Game messages for different world completions
+        let messages = [
+            "I see you are worth this maze. You proved your worth. Good old Jonathan thought you were cooked. Go on, go to the next world.<br/> <br/> <br/> <br/>  - Anonymous Wizard",
+            // Add more messages as needed for subsequent worlds
+        ];
+
+        // Audio elements for game sounds
+        const music = new Audio("Soundtrack/MazeOfDoom.wav");
+        const xpSound = new Audio("Soundtrack/coin.wav");
+        const victorySound = new Audio("Soundtrack/Victory.wav");
+        const endMusic = new Audio("Soundtrack/end.wav")
+        const letterOpen = new Audio("Soundtrack/letterOpen.wav")
+        music.loop = true; // Loop the background music
+        endMusic.loop = true;
+        letterOpen.loop = false;
+
+        let canPlayMusic = true;
+
+        let moved = false; // Flag to track if the player has moved, used for initial music play
+
+        // Function to display a message on the screen (non-blocking)
+        function showGameMessage(message, displayLocation) {
+            displayLocation.innerHTML = message;
+        }
+
+        // Function to clear messages from the display area
+        function clearGameMessage() {
+            levelEndDisplay.innerHTML = "";
+            if (game.currentLevel != (game.jsons.length - 1)) {
+                instructions.innerHTML = "WASD/Arrow Keys to Move.";
+            }
+            else {
+                instructions.innerHTML = "Made by SunnyMoon Studios"
+            }    
+        }
+
+        // Game state object - will be initialized with data from JSON
+        let game = {
+            currentLevel: 0, // Current level index (0-indexed)
+            canLoad: false, // Flag to control loading of the next level via user input
+            // Array of JSON level file names
+            jsons: ["HuhMaze", "UhWat", "PuzzlingBarriers", "SomeTrustIssues", "HohoGetWrecked", "End"],
+            board: [],          // Stores the maze layout
+            colour: "#FFFFFF",  // Background color of the maze cells
+            height: 300,        // Canvas height (will be scaled by buff)
+            width: 300,         // Canvas width (will be scaled by buff)
+            singleSquare: 30,   // Size of each cell in the maze (will be scaled by buff)
+            doomEnds: false,    // Specific game mechanic flag
+            worldEnd: false,    // Flag if the current level is a "world end" level
+            worldEndCoords: {}, // Coordinates for the world end point
+            mechanics: [],      // Array of game mechanics (not fully implemented in this snippet)
+            name: "MazeOfDoom", // Name of the current level
+            buff: 1,            // Multiplier for scaling height, width, and singleSquare
+            winLocation: {},    // Coordinates for the level's win point
+            extraPointsLocation: {}, // Coordinates for the extra points item
+            player: {
+                x: 1, y: 1,     // Player's current grid coordinates
+                vision: "unlimited", // Player's vision type (not fully implemented)
+                facing: "N",    // Player's facing direction (not fully implemented)
+                effects: [],    // Player's active effects (not fully implemented)
+                extraPoints: false, // Flag if player has collected extra points for current level
+                letterOpened: false
+            },
+
+            // Draws the entire maze and player on the canvas
+            draw: function() {
+                // Clear the entire canvas before redrawing to prevent artifacts
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Draw the background of the entire canvas
+                ctx.fillStyle = game.colour;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Iterate through each row and column to draw maze cells
+                for (let row = 0; row < game.board.length; row++) {
+                    for (let col = 0; col < game.board[row].length; col++) {
+                        const cell = game.board[row][col];
+                        const x = col * game.singleSquare; // X position on canvas
+                        const y = row * game.singleSquare; // Y position on canvas
+
+                        // Determine cell color based on its type
+                        switch (cell) {
+                            case '#': // Wall
+                                ctx.fillStyle = "black";
+                                break;
+                            case ' ': // Path
+                                ctx.fillStyle = game.colour; // Path color (usually white)
+                                break;
+                            case 'D': // Through Wall (specific mechanic)
+                                ctx.fillStyle = "#010101"; // Dark grey
+                                break;
+                            case 'F': // Fake Path (specific mechanic)
+                                ctx.fillStyle = "#FEFEEE"; // Off-white
+                                break;
+                            case 'E': // Exit
+                            case 'H': // Fake Exit
+                                ctx.fillStyle = "green";
+                                break;
+                            default: // Unknown character, draw as path
+                                ctx.fillStyle = game.colour;
+                                break;
+                        }
+                        // Draw the square for the current cell
+                        ctx.fillRect(x, y, game.singleSquare, game.singleSquare);
+                    }
+                }
+
+                // Draw the player
+                ctx.fillStyle = "red"; // Player color
+                ctx.fillRect(
+                    game.player.x * game.singleSquare,
+                    game.player.y * game.singleSquare,
+                    game.singleSquare,
+                    game.singleSquare
+                );
+
+                // Draw extra points if not collected
+                ctx.fillStyle = "yellow";
+                // Only draw if extra points exist and haven't been collected
+                if (game.extraPointsLocation.x !== -1 && !game.player.extraPoints) {
+                    ctx.fillRect(
+                        game.extraPointsLocation.x * game.singleSquare,
+                        game.extraPointsLocation.y * game.singleSquare,
+                        game.singleSquare,
+                        game.singleSquare
+                    );
+                }
+
+                // Draw world end point if applicable
+                ctx.fillStyle = "orange"; // Distinct color for world end
+                if (game.worldEnd && game.worldEndCoords.x !== undefined) {
+                    ctx.fillRect(
+                        game.worldEndCoords.x * game.singleSquare,
+                        game.worldEndCoords.y * game.singleSquare,
+                        game.singleSquare,
+                        game.singleSquare
+                    );
+                }
+            },
+
+            // Checks for win conditions and extra point collection
+            checkWin: function() {
+                // Collect extra points if player is on the extra points square and hasn't collected them yet
+                if (this.player.x === this.extraPointsLocation.x && this.player.y === this.extraPointsLocation.y && !this.player.extraPoints) {
+                    this.player.extraPoints = true; // Mark as collected
+                    xpSound.play(); // Play sound effect
+                    game.draw(); // Redraw immediately to make the extra points disappear
+                }
+
+                // Handle world end condition (if player reaches a specific point before the final win)
+                if (this.worldEnd && this.player.x === this.worldEndCoords.x && this.player.y === this.worldEndCoords.y) {
+                    // Display a non-blocking message for world end
+                    showGameMessage(messages[Math.floor(game.currentLevel / 5)], levelEndDisplay);
+                    this.player.extraPoints = true;
+                    if (game.player.letterOpened == false) {
+                        canPlayMusic = false;
+                        music.pause();
+                        game.player.letterOpened = true;
+                        letterOpen.play()
+                        letterOpen.addEventListener('ended', () => {
+                            // Small delay before resuming music
+                            setTimeout(() => music.play(), 50);
+                            canPlayMusic = true;
+                            
+                        }, { once: true });
+                        
+                    }   
+                    // The player is already on the world end square, so no need to move them.
+                    // If you want to prevent further movement here until acknowledged, you'd add a flag.
+                }
+                else {
+                    clearGameMessage();
+                    game.player.letterOpened = false;
+                }
+
+                // Check for true level win (player reaches the win location)
+                if (this.player.x === this.winLocation.x && this.player.y === this.winLocation.y) {
+                    music.pause(); // Pause background music
+                    victorySound.play(); // Play victory sound
+                    // Add an event listener to resume background music after victory sound ends
+                    victorySound.addEventListener('ended', () => {
+                        // Small delay before resuming music
+                        setTimeout(() => music.play(), 50);
+                    }, { once: true }); // Use { once: true } to ensure listener is removed after one use
+                    return true; // Indicate that the level is won
+                }
+                return false; // Level not won yet
+            },
+
+            // The main game loop function, called repeatedly
+            tick: function() {
+                // Play music if player has moved and music is currently paused
+                // console.log(moved)
+                // console.log(canPlayMusic)
+                console.log(game.currentLevel)
+                if (moved && canPlayMusic) {
+                    if (game.currentLevel == 5) {
+                        music.pause();
+                        
+                        endMusic.play();
+                        
+                    }
+                    else {
+                        
+                        music.play().catch(e => console.log("Music play prevented:", e)); // Catch potential play errors
+                    }
+                }
+
+                
+
+                // Update the heading with the current level name
+                headingElement.innerHTML = game.name;
+
+                // Set canvas dimensions based on current game state
+                canvas.height = game.height;
+                canvas.width = game.width;
+
+                game.draw(); // Draw the current state of the game
+
+                const wonLevel = game.checkWin(); // Check if the level has been won
+
+                // Schedule the next tick. IMPORTANT: Pass 'game.tick' as a reference
+                let timeout = setTimeout(() => game.tick(), 50); // Calls tick every 50 milliseconds
+
+                // If the level is won, clear the timeout and proceed to endLevel logic
+                if (wonLevel) {
+                    clearTimeout(timeout);
+                    game.endLevel();
+                }
+            },
+
+            // Handles player movement based on direction input
+            move: function(direction) {
+                moved = true; // Set moved flag to true
+                let currentX = this.player.x;
+                let currentY = this.player.y;
+
+                // Calculate the next potential position based on direction
+                if (direction === "N") currentY--;
+                else if (direction === "S") currentY++;
+                else if (direction === "W") currentX--;
+                else if (direction === "E") currentX++;
+
+                // Collision Detection: Check if the new spot is valid
+                // Valid spots are not walls ('#'), not fake paths ('F'), and within canvas bounds
+                if (
+                    this.board[currentY] && // Check if the row exists (prevents out-of-bounds access)
+                    this.board[currentY][currentX] !== '#' &&
+                    this.board[currentY][currentX] !== 'F' &&
+                    currentY >= 0 && currentY < game.height / game.singleSquare &&
+                    currentX >= 0 && currentX < game.width / game.singleSquare
+                ) {
+                    // If valid, update the player's position
+                    this.player.x = currentX;
+                    this.player.y = currentY;
+                }
+            },
+
+            // Returns a Promise that resolves when game.canLoad becomes true
+            waitForCanLoad: function() {
+                return new Promise(resolve => {
+                    const checkInterval = setInterval(() => {
+                        if (game.canLoad) {
+                            clearInterval(checkInterval); // Stop checking
+                            game.canLoad = false; // Reset flag for the next use
+                            resolve(); // Resolve the promise
+                        }
+                    }, 50); // Check every 50 milliseconds
+                });
+            },
+
+            // Handles logic after a level is won (displays message, waits for input, loads next level)
+            endLevel : async function() { // Make endLevel an async function
+                // Determine and display the win message (star rating)
+                let winMessage = game.player.extraPoints ? "3/3 star winner!" : "2/3 star winner!";
+                showGameMessage(winMessage, levelEndDisplay);
+                showGameMessage("Press 'L' or 'Enter' to go to the next level.", instructions)
+
+                await this.waitForCanLoad();
+                console.log("Next Level Requested")
+
+                clearGameMessage(); // Clear the win message from the display
+                ctx.fillStyle = game.colour;
+                // Check if there are more levels to load
+                // `game.jsons.length - 1` is the index of the last level.
+                // If currentLevel is less than this, there's a next level.
+                if (game.currentLevel < game.jsons.length - 2) {
+                    ctx.clearRect(0, 0, this.width, this.height); // Clear canvas before loading new level
+                    game.currentLevel++; // Move to the next level
+                    game.player.extraPoints = false; // Reset extra points for the new level
+                    game.player.letterOpened = false;
+                    loadLevel(game.jsons[game.currentLevel]); // Load the next level
+                }
+                else {
+                    ctx.clearRect(0, 0, this.width, this.height); // Clear canvas before loading new level
+                    // All levels finished, display game completion message
+                    showGameMessage("The next world is locked... <br/> <br/> <br/> Tip: Come back later, and see if it's unlocked. (Press L/Enter)", levelEndDisplay);
+                    console.log("World Lock Message displayed");
+                    await this.waitForCanLoad();
+                    console.log("L pressed?")
+                    setTimeout(() => {
+                        game.currentLevel++;
+                        loadLevel(game.jsons[game.currentLevel]); 
+                    }, 1)
+                    // Optionally, you might want to stop music completely or show a final game over screen.
+                }
+            }
+        };
+
+        // Function to load the level data from a JSON file
+        async function loadLevel(levelName) {
+            victorySound.pause();
+            victorySound.currentTime = 0;
+            try {
+                // Fetch the JSON file from the "Levels" directory
+                const response = await fetch("Levels/" + levelName + ".json");
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const levelData = await response.json(); // Parse the JSON data
+
+                // Update game state with loaded level data
+                game.board = levelData.board;
+                game.colour = levelData.colour;
+                game.height = levelData.height;
+                game.width = levelData.width;
+                game.singleSquare = levelData.singleSquare;
+                game.doomEnds = levelData.doomEnds;
+                game.worldEnd = levelData.worldEnd;
+
+                // Set world end coordinates if applicable, otherwise reset them
+                if (game.worldEnd) {
+                    game.worldEndCoords.x = levelData.worldEndCoords.x;
+                    game.worldEndCoords.y = levelData.worldEndCoords.y;
+                } else {
+                    game.worldEndCoords = {}; // Clear coordinates if not a world end level
+                }
+
+                game.player.vision = levelData.vision;
+                game.mechanics = levelData.mechanics;
+                game.name = levelData.levelName;
+                game.player.effects = levelData.effects;
+                game.buff = levelData.buff;
+                game.player.facing = levelData.facing;
+                game.player.x = levelData.startingSquare.x;
+                game.player.y = levelData.startingSquare.y;
+                game.winLocation = levelData.winLocation;
+
+                // Set extra points location. If not defined in JSON, set to an inaccessible spot.
+                if (levelData.extraPoints !== undefined && levelData.extraPoints !== null) {
+                    game.extraPointsLocation.x = levelData.extraPoints.x;
+                    game.extraPointsLocation.y = levelData.extraPoints.y;
+                } else {
+                    game.extraPointsLocation.x = -1; // Set to an invalid coordinate
+                    game.extraPointsLocation.y = -1; // so it's not drawn or collected
+                }
+
+                // Apply buffer to canvas dimensions and square size
+                game.width = levelData.width * game.buff;
+                game.height = levelData.height * game.buff;
+                game.singleSquare = levelData.singleSquare * game.buff;
+
+                // Update the document title and heading with the level name
+                document.getElementById("title").innerHTML = game.name;
+                headingElement.innerHTML = game.name; // Set initial heading
+
+                // Start the game loop after the level data is fully loaded
+                game.tick();
+
+            } catch (error) {
+                console.error("Failed to load level data:", error);
+                // Display an error message on the canvas and heading if level loading fails
+                ctx.fillStyle = "red";
+                ctx.font = "20px Arial";
+                ctx.fillText("Error loading level!", 10, 50);
+                headingElement.innerHTML = "Error!";
+                showGameMessage("Failed to load level. Check console for details.", levelEndDisplay);
+            }
+        }
+
+        // Event handler for keyboard presses
+        function handleKeyPress(event) {
+            switch (event.key) {
+                case "ArrowUp":
+                case "w":
+                    game.move("N"); // Move North
+                    break;
+                case "ArrowDown":
+                case "s":
+                    game.move("S"); // Move South
+                    break;
+                case "ArrowLeft":
+                case "a":
+                    game.move("W"); // Move West
+                    break;
+                case "ArrowRight":
+                case "d":
+                    game.move("E"); // Move East
+                    break;
+                case "l":
+                case "Enter":
+                    game.canLoad = true; // Set flag to allow next level to load
+                    break;
+                case "r":
+                    ctx.fillStyle = game.colour;
+                    ctx.fillRect(0, 0, game.height, game.width)
+                    loadLevel(game.jsons[game.currentLevel])
+                default:
+                    return; // Do nothing for other keys
+            }
+            event.preventDefault(); // Prevent default browser actions for arrow keys/spacebar
+        }
+
+        // Attach the keydown event listener to the document
+        document.addEventListener('keydown', handleKeyPress);
+
+        // Load the first level when the window has fully loaded
+        window.onload = function() {
+            loadLevel(game.jsons[game.currentLevel]);
+        }
+    </script>
+</body>
+</html>

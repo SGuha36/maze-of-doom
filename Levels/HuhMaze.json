@@ -1,0 +1,30 @@
+{
+    "board": 
+    [
+        "#########",
+        "# # # # #",
+        "#   # # #",
+        "# # # # #",
+        "#       #",
+        "# #D## ##",
+        "# #  # # ",
+        "E #  # # ",
+        "#########"
+    ],
+    "levelName": "Huh? Maze?",
+    "colour": "#FFFFF0",
+    "doomEnds": false,
+    "worldEnd": false,
+    "worldEndCoords": null,
+    "vision": "unlimited",
+    "height": 270,
+    "width": 270,
+    "singleSquare": 30,
+    "buff": 2,
+    "mechanics": ["player", "exit", "wall", "throughWall", "buff", "xp"],
+    "effects": [null],
+    "winLocation": {"x": 0, "y": 7},
+    "startingSquare": {"x": 6, "y": 7},
+    "extraPoints": {"x": 3, "y": 7},
+    "facing": "N"
+}

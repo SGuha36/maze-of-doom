@@ -1,0 +1,37 @@
+{
+    "board": 
+    [
+        "################",
+        "######## #######",
+        "###    #  ###EDD",
+        "#D ### ## #####D",
+        "#D #   ##   ###D",
+        "#D## ## # # ###D",
+        "#D      # #  ##D",
+        "#### #### ## ##D",
+        "###       ## ##D",
+        "###     # #  ##D",
+        "###     # # ###D",
+        "###     # #   #D",
+        "###     # ### #D",
+        "#### ######## #D",
+        "#############DDD",
+        "################"
+    ],
+    "levelName": "Hoho Get Wrecked",
+    "colour": "#FFFFF0",
+    "doomEnds": false,
+    "vision": "unlimited",
+    "worldEnd": true,
+    "worldEndCoords": {"x": 5, "y": 10},
+    "height": 480,
+    "width": 480,
+    "singleSquare": 30,
+    "buff": 1,
+    "mechanics": ["player", "exit", "wall", "throughWall", "fakePath", "worldEnd"],
+    "effects": null,
+    "winLocation": {"x": 13, "y": 2},
+    "startingSquare": {"x": 2, "y": 4},
+    "extraPoints": null,
+    "facing": "E"
+}

@@ -1,0 +1,31 @@
+{
+    "board": 
+    [
+        "E #######H",
+        "F F#  F F ",
+        " D # ## F#",
+        " # #DD#   ",
+        "   D  D## ",
+        " #FDDD#   ",
+        " D ##F#DF ",
+        "## #     #",
+        "##   #####",
+        "##########"
+    ],
+    "levelName": "Some Trust Issues",
+    "colour": "#FFFFF0",
+    "doomEnds": false,
+    "vision": "unlimited",
+    "worldEnd": false,
+    "worldEndCoords": null,
+    "height": 300,
+    "width": 300,
+    "singleSquare": 30,
+    "buff": 1.5,
+    "mechanics": ["player", "exit", "wall", "throughWall", "fakePath", "fakeExit", "xp"],
+    "effects": null,
+    "winLocation": {"x": 0, "y": 0},
+    "startingSquare": {"x": 5, "y": 4},
+    "extraPoints": {"x": 5, "y": 4},
+    "facing": "E"
+}

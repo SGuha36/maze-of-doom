@@ -1,0 +1,137 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maze of Doom</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <style>
+        div {
+            height: 88vh;
+            display: flex;
+            justify-content: center;    /* Vertically center */
+        }
+    </style>
+</head>
+<body>
+    <h1>Maze of DOOM</h1>
+    <div>
+        <button><a href="Maze.html">Maze</a></button>
+        <button><a href="levelEditor.html">Level Editor</a></button>
+    </div>
+</body>
+</html> -->
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maze of Doom</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+     Tailwind CSS CDN 
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for the Inter font */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+    <script>
+        vineBoom = new Audio("Soundtrack/vine-boom.mp3");
+        vineBoom.play();
+        vineBoom.loop = true;
+    </script>
+    Main title, centered 
+    <h1 class="text-4xl font-bold text-center text-gray-800 py-8">Maze of DOOM</h1>
+
+        <div class="flex-grow flex flex-col items-center justify-center p-4">
+        
+        <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 mb-4 w-64 text-center">
+            <a href="Maze.html" class="block text-white no-underline">Maze</a>
+        </button>
+        
+       
+        <button class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 w-64 text-center">
+            <a href="levelEditor.html" class="block text-white no-underline">Level Editor</a>
+        </button>
+    </div>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maze of Doom</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for the Inter font */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        a.dwnld {
+            font-size: 10px;
+        }
+        /* The #menu-buttons style was removed from here */
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+    <h1 class="text-4xl font-bold text-center text-gray-800 py-8">Maze of DOOM</h1>
+
+    <div class="flex-grow flex flex-col items-center justify-center p-4">
+
+        <button id="startButton" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-4 px-8 rounded-lg shadow-lg text-xl transition duration-300 ease-in-out transform hover:scale-105">
+            Click to Start
+        </button>
+
+        <div id="menu-buttons" class="hidden mt-4 flex flex-col items-center">
+            <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 mb-4 w-64 text-center">
+                <a href="Maze.html" class="block text-white no-underline">Story Mazes</a>
+            </button>
+            
+            <button class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 mb-4 w-64 text-center">
+                <a href="levelEditor.html" class="block text-white no-underline">Level Editor</a>
+            </button>
+
+            <button class="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 w-64 text-center">
+                <a href="Random.html" class="block text-white no-underline">Random Maze Generator</a>
+            </button>
+
+        </div>
+
+    </div>
+
+    <footer>
+        <p style="font-size: 7px;">Everything in this game is under the CC BY-SA License</p>
+    </footer> 
+
+    <script>
+        // Get the elements from the document
+        const startButton = document.getElementById('startButton');
+        const menuButtons = document.getElementById('menu-buttons');
+        
+        // Create the audio object but don't play it yet
+        const music = new Audio("Soundtrack/Dreamworld.wav");
+
+        // Add an event listener to the start button
+        startButton.addEventListener('click', () => {
+            // 1. Play audio after user interaction
+            music.loop = true;
+            music.play();
+
+            // 2. Hide the start button
+            startButton.style.display = 'none';
+
+            // 3. Show the menu buttons
+            menuButtons.classList.remove('hidden');
+        });
+    </script>
+</body>
+</html>
