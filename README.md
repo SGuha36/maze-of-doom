@@ -1,5 +1,5 @@
 A small, work-in-progress project. This is a maze game. It is possible to play on the GitHub files but I recommend playing it [here](https://sunnymoonstudios.itch.io/maze-of-doom)
-If you anyway decide to play on the GitHub version (say you want to edit my game which I do not mind, even commercially, so long as you give me credit for this original work), be sure to host the game on localhost, as otherwise it will not work.
+If you anyway decide to play on the GitHub version (say you want to edit my game which I do not mind, [see license](LICENSE)), be sure to host the game on localhost, as otherwise it will not work.
 
 CONTROLS:
 WASD/Arrow Keys to move
