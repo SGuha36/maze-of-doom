@@ -102,15 +102,21 @@
         const music = new Audio("Soundtrack/MazeOfDoom.wav");
         const xpSound = new Audio("Soundtrack/coin.wav");
         const victorySound = new Audio("Soundtrack/Victory.wav");
-        const endMusic = new Audio("Soundtrack/end.wav")
-        const letterOpen = new Audio("Soundtrack/letterOpen.wav")
+        const endMusic = new Audio("Soundtrack/end.wav");
+        const letterOpen = new Audio("Soundtrack/letterOpen.wav");
+        const menuMusic = new Audio("Soundtrack/Menu.wav");
+
         music.loop = true; // Loop the background music
         endMusic.loop = true;
+        menuMusic.loop = true;
         letterOpen.loop = false;
 
         let canPlayMusic = true;
 
         let moved = false; // Flag to track if the player has moved, used for initial music play
+
+        let world1completion = false;
+        let world2completion = false;
 
         // Function to display a message on the screen (non-blocking)
         function showGameMessage(message, displayLocation) {
@@ -120,11 +126,16 @@
         // Function to clear messages from the display area
         function clearGameMessage() {
             levelEndDisplay.innerHTML = "";
+            // Check if the player is standing on a world selection tile before resetting
+            let currentTile = game.board[game.player.y]?.[game.player.x];
+            if (currentTile === "1" || currentTile === "2") {
+                return; 
+            }
+
             if (game.currentLevel != (game.jsons.length - 1)) {
                 instructions.innerHTML = "WASD/Arrow Keys to Move.";
-            }
-            else {
-                instructions.innerHTML = "Made by SunnyMoon Studios"
+            } else {
+                instructions.innerHTML = "Made by SunnyMoon Studios";
             }    
         }
 
@@ -132,8 +143,8 @@
         let game = {
             currentLevel: 0, // Current level index (0-indexed)
             canLoad: false, // Flag to control loading of the next level via user input
-            // Array of JSON level file names
-            jsons: ["HuhMaze", "UhWat", "PuzzlingBarriers", "SomeTrustIssues", "HohoGetWrecked", "End"],
+            // Array of JSON level file names. ALWAYS KEEP "END" AS THE LAST INDEX
+            jsons: ["HuhMaze", "UhWat", "PuzzlingBarriers", "SomeTrustIssues", "HohoGetWrecked", "WorldSelect", "WaitILikedTheOldMusic", "End"],
             board: [],          // Stores the maze layout
             colour: "#FFFFFF",  // Background color of the maze cells
             height: 300,        // Canvas height (will be scaled by buff)
@@ -190,6 +201,22 @@
                             case 'H': // Fake Exit
                                 ctx.fillStyle = "green";
                                 break;
+                            case '1':
+                                if (world1completion) {
+                                    ctx.fillStyle = "yellow"
+                                }
+                                else {
+                                    ctx.fillStyle = "#6b3900";
+                                }
+                                break; 
+                            case '2':
+                                if (world2completion) {
+                                    ctx.fillStyle = "yellow"
+                                }
+                                else {
+                                    ctx.fillStyle = "#6b3900";
+                                }
+                                break; 
                             default: // Unknown character, draw as path
                                 ctx.fillStyle = game.colour;
                                 break;
@@ -276,6 +303,12 @@
                         // Small delay before resuming music
                         setTimeout(() => music.play(), 50);
                     }, { once: true }); // Use { once: true } to ensure listener is removed after one use
+                    if (game.currentLevel == 4) {
+                        world1completion = true
+                    }
+                    // else if (game.currentLevel == INSERT WORLD 2 COMPLETION LEVEL) {
+                    //     game.world2completion = true
+                    // }
                     return true; // Indicate that the level is won
                 }
                 return false; // Level not won yet
@@ -286,17 +319,32 @@
                 // Play music if player has moved and music is currently paused
                 // console.log(moved)
                 // console.log(canPlayMusic)
-                console.log(game.currentLevel)
+                // console.log(game.currentLevel)
                 if (moved && canPlayMusic) {
-                    if (game.currentLevel == 5) {
+                    let currentLevelName = game.jsons[game.currentLevel]; // Get current level filename
+                    if (currentLevelName === "WorldSelect") {
+                        // Pause other music tracks
                         music.pause();
+                        endMusic.pause();
                         
-                        endMusic.play();
+                        // Play menu music
+                        menuMusic.play().catch(e => console.log("Menu music play prevented:", e));
+                    } 
+                    else if (currentLevelName === "WaitILikedTheOldMusic") {
+                        // Pause other music tracks
+                        music.pause();
+                        menuMusic.pause();
                         
-                    }
+                        // Play end music
+                        endMusic.play().catch(e => console.log("End music play prevented:", e));
+                    } 
                     else {
+                        // Pause specific zone music tracks
+                        endMusic.pause();
+                        menuMusic.pause();
                         
-                        music.play().catch(e => console.log("Music play prevented:", e)); // Catch potential play errors
+                        // Play normal background music
+                        music.play().catch(e => console.log("Music play prevented:", e));
                     }
                 }
 
@@ -310,6 +358,7 @@
                 canvas.width = game.width;
 
                 game.draw(); // Draw the current state of the game
+                game.worldSelectCheck();
 
                 const wonLevel = game.checkWin(); // Check if the level has been won
 
@@ -320,6 +369,16 @@
                 if (wonLevel) {
                     clearTimeout(timeout);
                     game.endLevel();
+                }
+            },
+
+            worldSelectCheck: function() {
+                if (this.board[this.player.y][this.player.x] == "1") {
+                    console.log("World 1")
+                    showGameMessage("World 1 - Press Space to enter.", instructions);
+                }
+                else if (this.board[this.player.y][this.player.x] == "2") {
+                    showGameMessage("World 2 - Press Space to enter.", instructions);
                 }
             },
 
@@ -347,6 +406,7 @@
                     // If valid, update the player's position
                     this.player.x = currentX;
                     this.player.y = currentY;
+                    console.log(this.board[this.player.y][this.player.x]);
                 }
             },
 
@@ -371,7 +431,7 @@
                 showGameMessage("Press 'L' or 'Enter' to go to the next level.", instructions)
 
                 await this.waitForCanLoad();
-                console.log("Next Level Requested")
+                // console.log("Next Level Requested")
 
                 clearGameMessage(); // Clear the win message from the display
                 ctx.fillStyle = game.colour;
@@ -389,14 +449,13 @@
                     ctx.clearRect(0, 0, this.width, this.height); // Clear canvas before loading new level
                     // All levels finished, display game completion message
                     showGameMessage("The next world is locked... <br/> <br/> <br/> Tip: Come back later, and see if it's unlocked. (Press L/Enter)", levelEndDisplay);
-                    console.log("World Lock Message displayed");
+                    // console.log("World Lock Message displayed");
                     await this.waitForCanLoad();
-                    console.log("L pressed?")
+                    // console.log("L pressed?")
                     setTimeout(() => {
                         game.currentLevel++;
                         loadLevel(game.jsons[game.currentLevel]); 
                     }, 1)
-                    // Optionally, you might want to stop music completely or show a final game over screen.
                 }
             }
         };
@@ -499,6 +558,17 @@
                     ctx.fillStyle = game.colour;
                     ctx.fillRect(0, 0, game.height, game.width)
                     loadLevel(game.jsons[game.currentLevel])
+                    break;
+                case " ": // Correct key value for Spacebar
+                    if (game.board[game.player.y][game.player.x] == "1") {
+                        game.currentLevel = game.jsons.indexOf("HuhMaze");
+                        loadLevel("HuhMaze");
+                    }
+                    else if (game.board[game.player.y][game.player.x] == "2") {
+                        game.currentLevel = game.jsons.indexOf("WaitILikedTheOldMusic");
+                        loadLevel("WaitILikedTheOldMusic");
+                    }
+                    break;
                 default:
                     return; // Do nothing for other keys
             }

@@ -1,0 +1,28 @@
+{
+    "board": 
+    [
+        "#####",
+        "#  1#",
+        "# ###",
+        "#  2#",
+        "# ###",
+        "#  U#",
+        "#####"
+    ],
+    "levelName": "World Select",
+    "colour": "#FFFFF0",
+    "doomEnds": false,
+    "vision": "unlimited",
+    "worldEnd": false,
+    "worldEndCoords": null,
+    "height": 210,
+    "width": 150,
+    "singleSquare": 30,
+    "buff": 1,
+    "mechanics": ["player", "exit", "wall", "worldselect"],
+    "effects": null,
+    "winLocation": {"x": -1, "y": -1},
+    "startingSquare": {"x": 1, "y": 1},
+    "extraPoints": null,
+    "facing": "S"
+}
