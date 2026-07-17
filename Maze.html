@@ -94,7 +94,7 @@
 
         // Game messages for different world completions
         let messages = [
-            "I see you are worth this maze. You proved your worth. Good old Jonathan thought you were cooked. Go on, go to the next world.<br/> <br/> <br/> <br/>  - Anonymous Wizard",
+            "I see you are worth this maze. You proved your worth. Good old Jonathan thought you were cooked. Go on, go to the next world.<br/> <br/> <br/> <br/>  - Anonymous Wizard (move to dismiss)",
             // Add more messages as needed for subsequent worlds
         ];
 
@@ -113,6 +113,14 @@
         letterOpen.loop = false;
 
         let canPlayMusic = true;
+
+        function getCurrentBgMusic() {
+            let currentLevelName = game.jsons[game.currentLevel];
+            if (currentLevelName === "WorldSelect") return menuMusic;
+            if (currentLevelName === "End") return endMusic;
+            if (game.currentLevel > 4) return world2Music;
+            return world1Music;
+        }
 
         let moved = false; // Flag to track if the player has moved, used for initial music play
 
@@ -276,15 +284,14 @@
                     this.player.extraPoints = true;
                     if (game.player.letterOpened == false) {
                         canPlayMusic = false;
-                        world1Music.pause();
+                        let bgMusic = getCurrentBgMusic();
+                        bgMusic.pause();
                         game.player.letterOpened = true;
                         letterOpen.play()
-                        letterOpen.addEventListener('ended', () => {
-                            // Small delay before resuming music
-                            setTimeout(() => world1Music.play(), 50);
+                        letterOpen.onended = () => {
+                            setTimeout(() => bgMusic.play(), 50);
                             canPlayMusic = true;
-                            
-                        }, { once: true });
+                        };
                         
                     }   
                     // The player is already on the world end square, so no need to move them.
@@ -297,13 +304,13 @@
 
                 // Check for true level win (player reaches the win location)
                 if (this.player.x === this.winLocation.x && this.player.y === this.winLocation.y) {
-                    world1Music.pause(); // Pause background music
+                    let bgMusic = getCurrentBgMusic();
+                    bgMusic.pause(); // Pause background music
                     victorySound.play(); // Play victory sound
                     // Add an event listener to resume background music after victory sound ends
-                    victorySound.addEventListener('ended', () => {
-                        // Small delay before resuming music
-                        setTimeout(() => world1Music.play(), 50);
-                    }, { once: true }); // Use { once: true } to ensure listener is removed after one use
+                    victorySound.onended = () => {
+                        setTimeout(() => bgMusic.play(), 50);
+                    };
                     if (game.currentLevel == 4) {
                         world1completion = true
                     }
@@ -341,7 +348,7 @@
                         // Play end music
                         endMusic.play().catch(e => console.log("End music play prevented:", e));
                     }
-                    else if (currentLevelName === "WaitILikedTheOldMusic") {
+                    else if (game.currentLevel > 4) {
                         // Pause other music tracks
                         world1Music.pause();
                         endMusic.pause();
@@ -461,7 +468,7 @@
                 else {
                     ctx.clearRect(0, 0, this.width, this.height); // Clear canvas before loading new level
                     // All levels finished, display game completion message
-                    showGameMessage("The next world is locked... <br/> <br/> <br/> Tip: Come back later, and see if it's unlocked. (Press L/Enter)", levelEndDisplay);
+                    showGameMessage("The next levels are locked... <br/> <br/> <br/> Tip: Come back later, and see if it's unlocked. (Press L/Enter)", levelEndDisplay);
                     // console.log("World Lock Message displayed");
                     await this.waitForCanLoad();
                     // console.log("L pressed?")
