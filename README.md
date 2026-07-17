@@ -2,6 +2,8 @@ A small, work-in-progress project. This is a maze game. It is possible to play o
 
 If you anyway decide to play on the GitHub version (say you want to edit my game which I do not mind, [see license](LICENSE)), be sure to host the game on localhost, as otherwise it will not work.
 
+THIS PROJECT IS PROGRAMMED ON VISUAL STUDIO CODE WITH HTML, CSS AND JAVASCRIPT, WHILE THE MUSIC IS MADE IN BOSCA CEOIL: THE BLUE ALBUM. THE LEVELS ARE MADE ON VISUAL STUDIO CODE WITH JSON.
+
 CONTROLS:
 
 WASD/Arrow Keys to move
