@@ -9,6 +9,7 @@ WASD/Arrow Keys to move
 L/Enter to move on to the next level
 
 PROJECT STRUCTURE:
+
 `Maze.html` - The page where the main game is played on.
 
 `MazeOld.html` - An older version of Maze.html, treated as a backup in case anything unexpected happens to the main file.
