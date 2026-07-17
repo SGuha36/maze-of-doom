@@ -18,7 +18,7 @@
     "height": 210,
     "width": 150,
     "singleSquare": 30,
-    "buff": 1,
+    "buff": 2.5,
     "mechanics": ["player", "exit", "wall", "worldselect"],
     "effects": null,
     "winLocation": {"x": -1, "y": -1},

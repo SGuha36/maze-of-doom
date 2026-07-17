@@ -99,14 +99,15 @@
         ];
 
         // Audio elements for game sounds
-        const music = new Audio("Soundtrack/MazeOfDoom.wav");
+        const world1Music = new Audio("Soundtrack/MazeOfDoom.wav");
+        const world2Music = new Audio("Soundtrack/World2.wav");
         const xpSound = new Audio("Soundtrack/coin.wav");
         const victorySound = new Audio("Soundtrack/Victory.wav");
         const endMusic = new Audio("Soundtrack/end.wav");
         const letterOpen = new Audio("Soundtrack/letterOpen.wav");
         const menuMusic = new Audio("Soundtrack/Menu.wav");
 
-        music.loop = true; // Loop the background music
+        world1Music.loop = true; // Loop the background music
         endMusic.loop = true;
         menuMusic.loop = true;
         letterOpen.loop = false;
@@ -275,12 +276,12 @@
                     this.player.extraPoints = true;
                     if (game.player.letterOpened == false) {
                         canPlayMusic = false;
-                        music.pause();
+                        world1Music.pause();
                         game.player.letterOpened = true;
                         letterOpen.play()
                         letterOpen.addEventListener('ended', () => {
                             // Small delay before resuming music
-                            setTimeout(() => music.play(), 50);
+                            setTimeout(() => world1Music.play(), 50);
                             canPlayMusic = true;
                             
                         }, { once: true });
@@ -296,12 +297,12 @@
 
                 // Check for true level win (player reaches the win location)
                 if (this.player.x === this.winLocation.x && this.player.y === this.winLocation.y) {
-                    music.pause(); // Pause background music
+                    world1Music.pause(); // Pause background music
                     victorySound.play(); // Play victory sound
                     // Add an event listener to resume background music after victory sound ends
                     victorySound.addEventListener('ended', () => {
                         // Small delay before resuming music
-                        setTimeout(() => music.play(), 50);
+                        setTimeout(() => world1Music.play(), 50);
                     }, { once: true }); // Use { once: true } to ensure listener is removed after one use
                     if (game.currentLevel == 4) {
                         world1completion = true
@@ -324,27 +325,39 @@
                     let currentLevelName = game.jsons[game.currentLevel]; // Get current level filename
                     if (currentLevelName === "WorldSelect") {
                         // Pause other music tracks
-                        music.pause();
+                        world1Music.pause();
+                        world2Music.pause();
                         endMusic.pause();
                         
                         // Play menu music
                         menuMusic.play().catch(e => console.log("Menu music play prevented:", e));
                     } 
-                    else if (currentLevelName === "WaitILikedTheOldMusic") {
+                    else if (currentLevelName === "End") {
                         // Pause other music tracks
-                        music.pause();
+                        world1Music.pause();
+                        world2Music.pause();
                         menuMusic.pause();
                         
                         // Play end music
                         endMusic.play().catch(e => console.log("End music play prevented:", e));
+                    }
+                    else if (currentLevelName === "WaitILikedTheOldMusic") {
+                        // Pause other music tracks
+                        world1Music.pause();
+                        endMusic.pause();
+                        menuMusic.pause();
+
+                        // Play world 2 music
+                        world2Music.play().catch(e => console.log("Menu music play prevented:", e));
                     } 
                     else {
                         // Pause specific zone music tracks
+                        world2Music.pause();
                         endMusic.pause();
                         menuMusic.pause();
                         
-                        // Play normal background music
-                        music.play().catch(e => console.log("Music play prevented:", e));
+                        // Play normal background music (world 1 only)
+                        world1Music.play().catch(e => console.log("Music play prevented:", e));
                     }
                 }
 
