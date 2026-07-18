@@ -396,10 +396,11 @@
 
             worldSelectCheck: function() {
                 if (this.board[this.player.y][this.player.x] == "1") {
-                    showGameMessage("World 1 - Press Space to enter.", instructions);
+                    world1completion ? showGameMessage("World 1 (completed) - Press Space to restart World 1.", instructions) : showGameMessage("World 1 - Press Space to enter.", instructions);
                 }
                 else if (this.board[this.player.y][this.player.x] == "2") {
-                    world1completion ? showGameMessage("World 2 - Press Space to enter.", instructions) : showGameMessage("World locked - complete world 1 first.", instructions)
+                    world1completion ? (world2completion ? showGameMessage("World 2 (completed) - Press Space restart World 2.", instructions) : showGameMessage("World 2 - Press Space to enter.", instructions)) : showGameMessage("World locked - complete world 1 first.", instructions);
+
                 }
             },
 
