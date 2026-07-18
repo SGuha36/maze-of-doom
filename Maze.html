@@ -399,7 +399,7 @@
                     showGameMessage("World 1 - Press Space to enter.", instructions);
                 }
                 else if (this.board[this.player.y][this.player.x] == "2") {
-                    showGameMessage("World 2 - Press Space to enter.", instructions);
+                    world1completion ? showGameMessage("World 2 - Press Space to enter.", instructions) : showGameMessage("World locked - complete world 1 first.", instructions)
                 }
             },
 
@@ -584,7 +584,7 @@
                         game.currentLevel = game.jsons.indexOf("HuhMaze");
                         loadLevel("HuhMaze");
                     }
-                    else if (game.board[game.player.y][game.player.x] == "2") {
+                    else if (game.board[game.player.y][game.player.x] == "2" && world1completion) {
                         game.currentLevel = game.jsons.indexOf("WaitILikedTheOldMusic");
                         loadLevel("WaitILikedTheOldMusic");
                     }
