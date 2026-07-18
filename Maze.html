@@ -115,6 +115,8 @@
 
         let canPlayMusic = true;
 
+        let currentMessage = 0;
+
         function getCurrentBgMusic() {
             let currentLevelName = game.jsons[game.currentLevel];
             if (currentLevelName === "WorldSelect") return menuMusic;
@@ -281,8 +283,9 @@
                 // Handle world end condition (if player reaches a specific point before the final win)
                 if (this.worldEnd && this.player.x === this.worldEndCoords.x && this.player.y === this.worldEndCoords.y) {
                     // Display a non-blocking message for world end
-                    showGameMessage(messages[Math.floor(game.currentLevel / 5)], levelEndDisplay);
+                    showGameMessage(messages[currentMessage], levelEndDisplay);
                     this.player.extraPoints = true;
+                    currentMessage++;
                     if (game.player.letterOpened == false) {
                         canPlayMusic = false;
                         let bgMusic = getCurrentBgMusic();
