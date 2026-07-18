@@ -1,0 +1,28 @@
+{
+    "board": 
+    [
+        "###############",
+        "# D   #   #   #",
+        "# # # ### D ###",
+        "# #   #   #   #",
+        "# # # DD# # # #",
+        "# #   #   #  E#",
+        "###############"
+    ],
+    "levelName": "Seph; the code is 1836.",
+    "colour": "#FFFFF0",
+    "doomEnds": false,
+    "vision": "unlimited",
+    "worldEnd": false,
+    "worldEndCoords": null,
+    "height": 210,
+    "width": 450,
+    "singleSquare": 30,
+    "buff": 1,
+    "mechanics": ["player", "exit", "wall", "throughWall", "xp"],
+    "effects": null,
+    "winLocation": {"x": 13, "y": 5},
+    "startingSquare": {"x": 1, "y": 5},
+    "extraPoints": {"x": 7, "y": 1},
+    "facing": "N"
+}
