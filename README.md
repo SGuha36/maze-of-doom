@@ -1,3 +1,8 @@
+<p align="center">
+  <img src="favicon.ico" alt="Maze of Doom">
+  <b><h3>MAZE OF DOOM</h3></b>
+</p>
+
 A small, work-in-progress project. This is a maze game. It is possible to play on the GitHub files but I recommend playing it [here](https://sunnymoonstudios.itch.io/maze-of-doom).
 
 If you anyway decide to play on the GitHub version (say you want to edit my game which I do not mind, [see license](LICENSE)), be sure to host the game on localhost, as otherwise it will not work.
