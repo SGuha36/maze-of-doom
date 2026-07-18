@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="favicon.ico" alt="Maze of Doom">
+  <img src="favicon.ico" alt="Maze of Doom" width="500" height="500">
   <b><h3>MAZE OF DOOM</h3></b>
 </p>
 
