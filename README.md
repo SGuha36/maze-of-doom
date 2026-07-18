@@ -6,9 +6,13 @@ THIS PROJECT IS PROGRAMMED ON VISUAL STUDIO CODE WITH HTML, CSS AND JAVASCRIPT, 
 
 CONTROLS:
 
-WASD/Arrow Keys to move
+WASD/Arrow Keys to move.
 
-L/Enter to move on to the next level
+L/Enter to move on to the next level.
+
+R to restart current level.
+
+M to go to world select.
 
 PROJECT STRUCTURE:
 

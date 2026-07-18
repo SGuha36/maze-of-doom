@@ -579,7 +579,7 @@
                     ctx.fillRect(0, 0, game.height, game.width)
                     loadLevel(game.jsons[game.currentLevel])
                     break;
-                case " ": // Correct key value for Spacebar
+                case " ":
                     if (game.board[game.player.y][game.player.x] == "1") {
                         game.currentLevel = game.jsons.indexOf("HuhMaze");
                         loadLevel("HuhMaze");
@@ -589,6 +589,9 @@
                         loadLevel("WaitILikedTheOldMusic");
                     }
                     break;
+                case "m":
+                    game.currentLevel = game.jsons.indexOf("WorldSelect");
+                    loadLevel("WorldSelect");
                 default:
                     return; // Do nothing for other keys
             }
