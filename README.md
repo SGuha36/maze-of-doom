@@ -23,8 +23,6 @@ PROJECT STRUCTURE:
 
 `Maze.html` - The page where the main game is played on.
 
-`MazeOld.html` - An older version of Maze.html, treated as a backup in case anything unexpected happens to the main file.
-
 `index.html` - First page you see on itch.io, buttons leading to the [story] mazes and the planned other gamemodes.
 
 `levelEditor.html` - A planned gamemode to create your own maze level(s).
