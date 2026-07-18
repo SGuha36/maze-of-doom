@@ -177,6 +177,24 @@
                 extraPoints: false, // Flag if player has collected extra points for current level
                 letterOpened: false
             },
+            levelCompletion: {
+                HuhMaze: false,
+                UhWat: false,
+                PuzzlingBarriers: false,
+                SomeTrustIssues: false,
+                HohoGetWrecked: false,
+                WaitILikedTheOldMusic: false
+            },
+
+            markLevelCompleted: function(levelName) {
+                if (levelName) {
+                    this.levelCompletion[levelName] = true;
+                }
+            },
+
+            getFirstIncompleteLevel: function() {
+                return this.jsons.find(levelName => this.levelCompletion[levelName] === false);
+            },
 
             // Draws the entire maze and player on the canvas
             draw: function() {
@@ -309,7 +327,11 @@
                     let bgMusic = getCurrentBgMusic();
                     bgMusic.pause(); // Pause background music
                     victorySound.play(); // Play victory sound
-                    // Add an event listener to resume background music after victory sound ends
+
+                    const levelName = this.jsons[this.currentLevel];
+                    this.markLevelCompleted(levelName);
+
+
                     victorySound.onended = () => {
                         setTimeout(() => bgMusic.play(), 50);
                     };
@@ -581,8 +603,13 @@
                     break;
                 case " ":
                     if (game.board[game.player.y][game.player.x] == "1") {
-                        game.currentLevel = game.jsons.indexOf("HuhMaze");
-                        loadLevel("HuhMaze");
+                        const nextLevelName = game.getFirstIncompleteLevel();
+                        if (nextLevelName) {
+                            game.currentLevel = game.jsons.indexOf(nextLevelName);
+                            loadLevel(nextLevelName);
+                        } else {
+                            loadLevel("HuhMaze");
+                        }
                     }
                     else if (game.board[game.player.y][game.player.x] == "2" && world1completion) {
                         game.currentLevel = game.jsons.indexOf("WaitILikedTheOldMusic");
