@@ -115,8 +115,6 @@
 
         let canPlayMusic = true;
 
-        let currentMessage = 0;
-
         function getCurrentBgMusic() {
             let currentLevelName = game.jsons[game.currentLevel];
             if (currentLevelName === "WorldSelect") return menuMusic;
@@ -153,6 +151,7 @@
 
         // Game state object - will be initialized with data from JSON
         let game = {
+            worldEndLevels: [4],
             currentLevel: 0, // Current level index (0-indexed)
             canLoad: false, // Flag to control loading of the next level via user input
             // Array of JSON level file names. ALWAYS KEEP "END" AS THE LAST INDEX
@@ -283,9 +282,8 @@
                 // Handle world end condition (if player reaches a specific point before the final win)
                 if (this.worldEnd && this.player.x === this.worldEndCoords.x && this.player.y === this.worldEndCoords.y) {
                     // Display a non-blocking message for world end
-                    showGameMessage(messages[currentMessage], levelEndDisplay);
+                    showGameMessage(messages[game.worldEndLevels.indexOf(game.currentLevel)], levelEndDisplay);
                     this.player.extraPoints = true;
-                    currentMessage++;
                     if (game.player.letterOpened == false) {
                         canPlayMusic = false;
                         let bgMusic = getCurrentBgMusic();
@@ -398,7 +396,6 @@
 
             worldSelectCheck: function() {
                 if (this.board[this.player.y][this.player.x] == "1") {
-                    console.log("World 1")
                     showGameMessage("World 1 - Press Space to enter.", instructions);
                 }
                 else if (this.board[this.player.y][this.player.x] == "2") {
@@ -430,7 +427,6 @@
                     // If valid, update the player's position
                     this.player.x = currentX;
                     this.player.y = currentY;
-                    console.log(this.board[this.player.y][this.player.x]);
                 }
             },
 
